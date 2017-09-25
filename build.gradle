@@ -34,6 +34,13 @@ repositories {
         }
         url 'https://dl.bintray.com/applicaster-ltd/maven'
     }
+    maven { // jwplayer
+        credentials {
+            username System.getenv("JWPLAYER_USERNAME")
+            password System.getenv("JWPLAYER_PASSWORD")
+        }
+        url 'https://mvn.jwplayer.com/content/repositories/releases/'
+    }
 }
 
 dependencies {
