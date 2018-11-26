@@ -5,13 +5,9 @@ plugins {
 apply plugin: 'com.android.library'
 apply from: 'bintray_publisher.gradle'
 
-ext {
-    supportLibraryVersion = '27.0.2'
-}
-
 android {
     compileSdkVersion 27
-    buildToolsVersion "${supportLibraryVersion}"
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 17
@@ -37,14 +33,6 @@ android {
     publishNonDefault true
 }
 
-configurations.all {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == 'com.android.support' && !details.requested.name.contains('multidex')) {
-            details.useVersion "${supportLibraryVersion}"
-        }
-    }
-}
-
 dependencies {
 
     // Applicaster SDK
@@ -58,9 +46,15 @@ dependencies {
         implementation(applicasterSDKPath)
     }
 
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     // JWPlayer
-    api 'com.longtailvideo.jwplayer:jwplayer-core:+'
-    api 'com.longtailvideo.jwplayer:jwplayer-common:+'
+    api ('com.longtailvideo.jwplayer:jwplayer-core:3.2.2') {
+        exclude group:    'com.google.android.exoplayer'
+    }
+
+    api ('com.longtailvideo.jwplayer:jwplayer-common:3.2.2') {
+        exclude group:    'com.google.android.exoplayer'
+    }
+
+    implementation ("com.google.android.exoplayer:exoplayer:2.6.0")
+
 }

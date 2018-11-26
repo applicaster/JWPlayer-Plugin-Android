@@ -4,23 +4,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.View;
 
+import com.applicaster.player.Player;
+import com.applicaster.player.PlayerLoaderI;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.Map;
 
-public class JWPlayerActivity extends AppCompatActivity {
+public class JWPlayerActivity extends AppCompatActivity{
 
     private static final String PLAYABLE_KEY = "playable_key";
     /**
      * Reference to the {@link JWPlayerView}
      */
     private JWPlayerView mPlayerView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,17 +77,18 @@ public class JWPlayerActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // Exit fullscreen when the user pressed the Back button
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayerView.getFullscreen()) {
-                mPlayerView.setFullscreen(false, true);
-                return false;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        // Exit fullscreen when the user pressed the Back button
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            if (mPlayerView.getFullscreen()) {
+//                mPlayerView.setFullscreen(false, true);
+//                return false;
+//            }
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     public static void startPlayerActivity(Context context, Playable playable, Map<String,String> params) {
         Intent intent = new Intent(context, JWPlayerActivity.class);
@@ -93,6 +99,4 @@ public class JWPlayerActivity extends AppCompatActivity {
 
         context.startActivity(intent);
     }
-
-
 }

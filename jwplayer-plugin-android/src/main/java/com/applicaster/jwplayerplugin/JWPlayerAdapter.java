@@ -1,26 +1,31 @@
 package com.applicaster.jwplayerplugin;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 
+import com.applicaster.controller.PlayerLoader;
+import com.applicaster.player.PlayerLoaderI;
 import com.applicaster.player.defaultplayer.BasePlayer;
+import com.applicaster.plugin_manager.login.LoginContract;
+import com.applicaster.plugin_manager.login.LoginManager;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
+import com.applicaster.util.StringUtil;
 import com.longtailvideo.jwplayer.JWPlayerView;
-import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.core.PlayerState;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.List;
 import java.util.Map;
 
-public class JWPlayerAdapter extends BasePlayer {
+public class JWPlayerAdapter extends BasePlayer{
 
     private static final String LICENSE_KEY = "LICENSE_KEY";
 
+
     // Properties
-//    private JWPlayerContainer jwPlayerContainer;
+    private JWPlayerContainer jwPlayerContainer;
     private JWPlayerView jwPlayerView;
     private String licenseKey;
 
@@ -42,7 +47,6 @@ public class JWPlayerAdapter extends BasePlayer {
         super.init(playable, context);
 
         JWPlayerView.setLicenseKey(context, licenseKey);
-        jwPlayerView = new JWPlayerView(context, new PlayerConfig.Builder().build());
     }
 
     /**
@@ -98,7 +102,7 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public void playInFullscreen(PlayableConfiguration configuration, int requestCode, @NonNull Context context) {
-        JWPlayerActivity.startPlayerActivity(context, getFirstPlayable(), configuration.getCustomConfiguration());
+        openLoginPluginIfNeeded(false);
     }
 
 
@@ -110,11 +114,16 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public void attachInline(@NonNull ViewGroup videoContainerView) {
+//        jwPlayerContainer = ((Activity)context).findViewById(OSUtil.getResourceId("playerView"));
+        jwPlayerContainer =new JWPlayerContainer(videoContainerView.getContext());
+        jwPlayerView = jwPlayerContainer.getJWPlayerView();
+
         ViewGroup.LayoutParams playerContainerLayoutParams
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
                 , ViewGroup.LayoutParams.MATCH_PARENT);
-        videoContainerView.addView(jwPlayerView, playerContainerLayoutParams);
-        jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable()));
+        videoContainerView.addView(jwPlayerContainer, playerContainerLayoutParams);
+
+        openLoginPluginIfNeeded(true);
     }
 
     /**
@@ -124,8 +133,8 @@ public class JWPlayerAdapter extends BasePlayer {
      */
     @Override
     public void removeInline(@NonNull ViewGroup videoContainerView) {
-        if(videoContainerView.indexOfChild(jwPlayerView) >= 0) {
-            videoContainerView.removeView(jwPlayerView);
+        if(videoContainerView.indexOfChild(jwPlayerContainer) >= 0) {
+            videoContainerView.removeView(jwPlayerContainer);
         }
     }
 
@@ -160,5 +169,70 @@ public class JWPlayerAdapter extends BasePlayer {
     @Override
     public void resumeInline() {
         jwPlayerView.play();
+    }
+
+    private void openLoginPluginIfNeeded(final boolean isInline){
+        /**
+         * if item is not locked continue to play, otherwise call login with playable item.
+         */
+        LoginContract loginPlugin = LoginManager.getLoginPlugin();
+        if (loginPlugin != null && loginPlugin.isItemLocked(getFirstPlayable()) && !loginPlugin.isTokenValid()) {
+            loginPlugin.login(getContext(), getFirstPlayable(), null, new LoginContract.Callback() {
+                @Override
+                public void onResult(boolean result) {
+                    if (result) {
+                        PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
+                        applicasterPlayerLoader.loadItem();
+                    }
+                }
+            });
+        } else {
+            PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
+            applicasterPlayerLoader.loadItem();
+        }
+    }
+
+    private void displayVideo(boolean isInline){
+        if (isInline){
+            jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable()) );
+            jwPlayerView.play();
+        }else {
+            JWPlayerActivity.startPlayerActivity(getContext(), getFirstPlayable(), getPluginConfigurationParams());
+        }
+    }
+
+    private class ApplicaterPlayerLoaderListener implements PlayerLoaderI {
+        private boolean isInline;
+
+        public ApplicaterPlayerLoaderListener(boolean isInline) {
+            this.isInline=isInline;
+        }
+
+        @Override
+        public String getItemId() {
+            return getPlayable().getPlayableId();
+        }
+
+
+        @Override
+        public Playable getPlayable() {
+            return getFirstPlayable();
+        }
+
+        @Override
+        public void onItemLoaded(Playable playable) {
+            init(playable, getContext());
+            displayVideo(isInline);
+        }
+
+        @Override
+        public boolean isFinishing() {
+            return ((Activity) getContext()).isFinishing();
+        }
+
+        @Override
+        public void showMediaErroDialog() {
+
+        }
     }
 }
