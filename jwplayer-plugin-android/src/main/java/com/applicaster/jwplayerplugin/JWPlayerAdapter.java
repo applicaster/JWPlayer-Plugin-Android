@@ -13,12 +13,18 @@ import com.applicaster.plugin_manager.login.LoginManager;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
 import com.longtailvideo.jwplayer.JWPlayerView;
+import com.longtailvideo.jwplayer.configuration.PlayerConfig;
 import com.longtailvideo.jwplayer.core.PlayerState;
+import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
+import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.ads.VMAPAdvertising;
+import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class JWPlayerAdapter extends BasePlayer{
+public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler {
 
     private static final String LICENSE_KEY = "LICENSE_KEY";
 
@@ -113,9 +119,9 @@ public class JWPlayerAdapter extends BasePlayer{
      */
     @Override
     public void attachInline(@NonNull ViewGroup videoContainerView) {
-//        jwPlayerContainer = ((Activity)context).findViewById(OSUtil.getResourceId("playerView"));
         jwPlayerContainer =new JWPlayerContainer(videoContainerView.getContext());
         jwPlayerView = jwPlayerContainer.getJWPlayerView();
+        jwPlayerView.setFullscreenHandler(this);
 
         ViewGroup.LayoutParams playerContainerLayoutParams
                 = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT
@@ -204,13 +210,51 @@ public class JWPlayerAdapter extends BasePlayer{
     }
 
     private void displayVideo(boolean isInline){
+
         if (isInline){
             jwPlayerView.load( JWPlayerUtil.getPlaylistItem(getFirstPlayable()) );
+            jwPlayerView.play();
         }else {
             JWPlayerActivity.startPlayerActivity(getContext(), getFirstPlayable(), getPluginConfigurationParams());
         }
     }
 
+    /************************** FullscreenHandler implementation ********************/
+
+    @Override
+    public void onFullscreenRequested() {
+        displayVideo(false);
+    }
+
+    @Override
+    public void onFullscreenExitRequested() {
+        jwPlayerView.play();
+    }
+
+    @Override
+    public void onResume() {
+        jwPlayerView.play();
+    }
+
+    @Override
+    public void onPause() {
+        jwPlayerView.pause();
+    }
+
+    @Override
+    public void onDestroy() { }
+
+    @Override
+    public void onAllowRotationChanged(boolean b) { }
+
+    @Override
+    public void updateLayoutParams(ViewGroup.LayoutParams layoutParams) { }
+
+    @Override
+    public void setUseFullscreenLayoutFlags(boolean b) { }
+
+
+    /************************** PlayerLoaderI ********************/
     private class ApplicaterPlayerLoaderListener implements PlayerLoaderI {
         private boolean isInline;
 
