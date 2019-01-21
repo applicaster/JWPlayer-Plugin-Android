@@ -86,29 +86,33 @@ public class JWPlayerUtil {
                 String liveAdUrl = (String) pluginConfiguration.get("live_ad_url");
                 String liveAdOffset = (String) pluginConfiguration.get("live_ad_offset");
                 String liveAdType = (String) pluginConfiguration.get("live_ad_type");
-                AdSource liveAdSource = AdSource.valueByName(liveAdType);
 
-                if (liveAdSource != null && StringUtil.isNotEmpty(liveAdUrl) && StringUtil.isNotEmpty(liveAdOffset)) {
+
+                try {
+                    AdSource liveAdSource = AdSource.valueByName(liveAdType);
                     AdBreak adBreak = new AdBreak(liveAdOffset, liveAdSource, liveAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
                     adSchedule.add(adBreak);
-                }
+                }catch (Exception e){ }
 
             } else {
                 String vodPreAdUrl = (String) pluginConfiguration.get("vod_preroll_ad_url");
                 String vodAdType = (String) pluginConfiguration.get("vod_ad_type");
-                AdSource vodAdSource = AdSource.valueByName(vodAdType);
-
-                if (vodAdSource != null && StringUtil.isNotEmpty(vodPreAdUrl)) {
-                    AdBreak adBreak = new AdBreak("pre", AdSource.valueByName(vodAdType), vodPreAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
-                    adSchedule.add(adBreak);
-                }
-
                 String vodMidAdUrl = (String) pluginConfiguration.get("vod_midroll_ad_url");
                 String vodMidAdOffset = (String) pluginConfiguration.get("vod_midroll_offset");
-                if (vodAdSource != null && StringUtil.isNotEmpty(vodMidAdUrl) && StringUtil.isNotEmpty(vodMidAdOffset)) {
-                    AdBreak postrollAdBreak = new AdBreak(vodMidAdOffset, AdSource.valueByName(vodAdType), vodMidAdUrl);
-                    adSchedule.add(postrollAdBreak);
-                }
+
+
+                try {
+                    AdSource vodAdSource = AdSource.valueByName(vodAdType);
+                    if (StringUtil.isNotEmpty(vodPreAdUrl)) {
+                        AdBreak adBreak = new AdBreak("pre", vodAdSource, vodPreAdUrl); // "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dlinear&correlator=");
+                        adSchedule.add(adBreak);
+                    }
+
+                    if ( StringUtil.isNotEmpty(vodMidAdUrl) || StringUtil.isNotEmpty(vodMidAdOffset) ) {
+                        AdBreak postrollAdBreak = new AdBreak(vodMidAdOffset, vodAdSource, vodMidAdUrl);
+                        adSchedule.add(postrollAdBreak);
+                    }
+                }catch (Exception e){ }
             }
         }
 
