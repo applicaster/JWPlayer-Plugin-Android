@@ -7,6 +7,7 @@ import com.applicaster.util.AppData;
 import com.applicaster.util.StringUtil;
 import com.longtailvideo.jwplayer.media.ads.AdBreak;
 import com.longtailvideo.jwplayer.media.ads.AdSource;
+import com.longtailvideo.jwplayer.media.captions.Caption;
 import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
 import java.util.ArrayList;
@@ -25,9 +26,9 @@ public class JWPlayerUtil {
     }
 
     public static PlaylistItem getPlaylistItem(Playable playable, Map pluginConfiguration){
-        PlaylistItem result=null;
+        PlaylistItem result = null;
 
-        if (playable !=null) {
+        if (playable != null){
             // Load a media source
             result = new PlaylistItem.Builder()
                     .file(playable.getContentVideoURL())
@@ -35,13 +36,36 @@ public class JWPlayerUtil {
                     .description(playable.getPlayableDescription())
                     .adSchedule(getAdSchedule(playable, pluginConfiguration))
                     .build();
+
+            List<Caption> captions = getCaptions(playable);
+            if (captions.size() != 0) {
+                result.setCaptions(captions);
+            }
         }
 
         return result;
 
     }
 
-    private static List<AdBreak> getAdSchedule(Playable playable, Map pluginConfiguration){
+    private static List<Caption> getCaptions(Playable playable) {
+        List<LinkedHashMap<String, String>> sideCarCaptions =
+                ((APAtomEntry.APAtomEntryPlayable) playable).getEntry()
+                        .getExtension("sideCarCaptions", ArrayList.class);
+        List<Caption> captionList = new ArrayList<>();
+
+        if(sideCarCaptions != null) {
+            for (int i = 0; i < sideCarCaptions.size(); i++) {
+                LinkedHashMap<String, String> sideCarCaption = sideCarCaptions.get(i);
+                Caption caption = new Caption.Builder().file(sideCarCaption.get("src"))
+                        .label(sideCarCaption.get("label")).build();
+                captionList.add(caption);
+            }
+        }
+
+        return captionList;
+    }
+
+    private static List<AdBreak> getAdSchedule(Playable playable, Map pluginConfiguration) {
         List<AdBreak> adSchedule = new ArrayList<>();
 
         if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
