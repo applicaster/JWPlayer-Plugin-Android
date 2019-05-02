@@ -1,5 +1,7 @@
 package com.applicaster.jwplayerplugin;
 
+import android.util.Log;
+
 import com.applicaster.atom.model.APAtomEntry;
 import com.applicaster.player.VideoAdsUtil;
 import com.applicaster.plugin_manager.playersmanager.Playable;
@@ -36,11 +38,15 @@ public class JWPlayerUtil {
                     .description(playable.getPlayableDescription())
                     .adSchedule(getAdSchedule(playable, pluginConfiguration))
                     .build();
-
-            List<Caption> captions = getCaptions(playable);
-            if (captions.size() != 0) {
-                result.setCaptions(captions);
+            try {
+                List<Caption> captions = getCaptions(playable);
+                if (captions.size() != 0) {
+                    result.setCaptions(captions);
+                }
+            } catch (Exception e) {
+                Log.e("JWPlayerUtil", e.toString());
             }
+
         }
 
         return result;
