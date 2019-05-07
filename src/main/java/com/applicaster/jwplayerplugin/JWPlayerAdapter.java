@@ -184,26 +184,37 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
          */
         final LoginContract loginPlugin = LoginManager.getLoginPlugin();
         if (loginPlugin != null ){
-
-            loginPlugin.isItemLocked(getContext(), getFirstPlayable(), new LoginContract.Callback() {
-                @Override
-                public void onResult(boolean result) {
-                    if (result) {
-                        loginPlugin.login(getContext(), getFirstPlayable(), null, new LoginContract.Callback() {
-                            @Override
-                            public void onResult(boolean result) {
-                                if (result) {
-                                    PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
-                                    applicasterPlayerLoader.loadItem();
-                                }
-                            }
-                        });
-                    } else {
-                        PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
-                        applicasterPlayerLoader.loadItem();
+            // forcing the item being locked
+            if (loginPlugin.isItemLocked(getFirstPlayable())) {
+                loginPlugin.login(getContext(), getFirstPlayable(), null, new LoginContract.Callback() {
+                    @Override
+                    public void onResult(boolean result) {
+                        if (result) {
+                            PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
+                            applicasterPlayerLoader.loadItem();
+                        }
                     }
-                }
-            });
+                });
+            }
+//            loginPlugin.isItemLocked(getContext(), getFirstPlayable(), new LoginContract.Callback() {
+//                @Override
+//                public void onResult(boolean result) {
+//                    if (result) {
+//                        loginPlugin.login(getContext(), getFirstPlayable(), null, new LoginContract.Callback() {
+//                            @Override
+//                            public void onResult(boolean result) {
+//                                if (result) {
+//                                    PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
+//                                    applicasterPlayerLoader.loadItem();
+//                                }
+//                            }
+//                        });
+//                    } else {
+//                        PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
+//                        applicasterPlayerLoader.loadItem();
+//                    }
+//                }
+//            });
         } else {
             PlayerLoader applicasterPlayerLoader = new PlayerLoader(new ApplicaterPlayerLoaderListener(isInline));
             applicasterPlayerLoader.loadItem();
