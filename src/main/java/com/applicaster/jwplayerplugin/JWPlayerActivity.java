@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,9 @@ import java.util.Map;
 
 public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
+    private PowerManager.WakeLock mWakeLock = null;
+    private PowerManager.WakeLock mDimLock = null;
+
     private static final String PLAYABLE_KEY = "playable_key";
     private static final String PLUGIN_CONFIGURATION_KEY = "plugin_configuration_key";
     /**
@@ -44,7 +48,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jwplayer);
-
+        aqquireWakeLocks();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
         jwPlayerContainer = findViewById(R.id.playerView);
@@ -66,6 +70,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         // Get a reference to the CastManager
 //        mCastManager = CastManager.getInstance();
     }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -99,6 +104,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         // Let JW Player know that the app is being destroyed
         mPlayerView.onDestroy();
         super.onDestroy();
+        dismissWakeLocks();
     }
 
 
@@ -147,4 +153,28 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
         context.startActivity(intent);
     }
+
+    private void dismissWakeLocks() {
+        if(mWakeLock != null) {
+            mWakeLock.release();
+            mWakeLock = null;
+        }
+        if(mDimLock != null) {
+            mDimLock.release();
+            mDimLock = null;
+        }
+    }
+
+    private void aqquireWakeLocks() {
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK
+                | PowerManager.ON_AFTER_RELEASE
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP, "Player");
+        mDimLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK,
+                "NexPlayer");
+
+        mWakeLock.acquire();
+        mDimLock.acquire();
+    }
+
 }
