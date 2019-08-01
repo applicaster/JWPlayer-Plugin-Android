@@ -1,33 +1,20 @@
 package com.applicaster.jwplayerplugin;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.widget.LinearLayout;
+import android.view.WindowManager;
 
-import com.applicaster.player.Player;
-import com.applicaster.player.PlayerLoaderI;
-import com.applicaster.player.defaultplayer.gmf.layeredvideo.VideoPlayer;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.internal.PlayersManager;
-import com.google.android.exoplayer2.PlayerMessage;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
-import com.longtailvideo.jwplayer.media.playlists.PlaylistItem;
 
-import java.io.Serializable;
 import java.util.Map;
 
 public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
@@ -50,6 +37,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         jwPlayerContainer = findViewById(R.id.playerView);
         mPlayerView = jwPlayerContainer.getJWPlayerView();
         mPlayerView.addOnFullscreenListener(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 //        // Keep the screen on during playback
 //        new KeepScreenOnHandler(mPlayerView, getWindow());
@@ -98,6 +86,7 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
     protected void onDestroy() {
         // Let JW Player know that the app is being destroyed
         mPlayerView.onDestroy();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onDestroy();
     }
 
