@@ -20,7 +20,7 @@ import java.util.Map;
 public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEvents.OnFullscreenListener {
 
     private static final String PLAYABLE_KEY = "playable_key";
-    private static final String PLUGIN_CONFIGURATION_KEY = "plugin_configuration_key";
+
     /**
      * Reference to the {@link JWPlayerView}
      */
@@ -39,20 +39,12 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
         mPlayerView.addOnFullscreenListener(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-//        // Keep the screen on during playback
-//        new KeepScreenOnHandler(mPlayerView, getWindow());
-//
-//        // Instantiate the JW Player event handler class
-//        mEventHandler = new JWEventHandler(mPlayerView, outputTextView);
-
         Playable playable = (Playable) getIntent().getSerializableExtra(PLAYABLE_KEY);
 
         // Load a media source
         mPlayerView.load(JWPlayerUtil.getPlaylistItem(playable, PlayersManager.getCurrentPlayer().getPluginConfigurationParams()));
         mPlayerView.play();
 
-        // Get a reference to the CastManager
-//        mCastManager = CastManager.getInstance();
     }
 
     @Override
@@ -114,12 +106,8 @@ public class JWPlayerActivity extends AppCompatActivity implements VideoPlayerEv
 
 
         if (fullscreenEvent.getFullscreen()) {
-//                LinearLayout.LayoutParams toFullscreen = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
-//                mPlayerView.setLayoutParams(toFullscreen);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
-//                LinearLayout.LayoutParams toMinimize = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0,1);
-//                mPlayerView.setLayoutParams(toMinimize);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
