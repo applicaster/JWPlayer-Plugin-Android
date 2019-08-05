@@ -1,6 +1,6 @@
 defaults: &defaults
     docker:
-      - image: circleci/android:api-27-alpha
+      - image: circleci/android:api-28
         environment:
           CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
           CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
