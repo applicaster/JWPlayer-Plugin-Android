@@ -12,18 +12,18 @@
     }
   ],
   "platform": "android",
-  "author_name": "Hanny Peleg",
-  "author_email": "h.peleg@applicaster.com",
-  "manifest_version": "1.3.5",
+  "author_name": "Alex Khomich",
+  "author_email": "a.khomich@applicaster.com",
+  "manifest_version": "1.4.0",
   "name": "JW Player",
   "description": "Android plugin for JWPlayer",
   "type": "player",
   "identifier": "JWPlayer-Plugin",
   "ui_builder_support": true,
   "dependency_name": "com.applicaster:JWPlayerPlugin",
-  "dependency_version": "1.3.5",
+  "dependency_version": "1.4.0",
   "whitelisted_account_ids": [],
-  "min_zapp_sdk": "4.3.12-dev",
+  "min_zapp_sdk": "10.0.0",
   "react_native": false,
   "custom_configuration_fields": [
     {
