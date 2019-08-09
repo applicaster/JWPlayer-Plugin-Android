@@ -66,6 +66,11 @@
       "type": "text",
       "key": "vod_ad_type",
       "tooltip_text": "VOD Ad Type"
+    },
+    {
+      "type": "checkbox",
+      "key": "ignore_default_subscription",
+      "default": 0
     }
   ],
   "hooks": {
