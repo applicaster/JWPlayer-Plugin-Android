@@ -12,12 +12,13 @@
     }
   ],
   "platform": "android",
-  "author_name": "Alex Khomich",
-  "author_email": "a.khomich@applicaster.com",
+  "author_name": "Pablo Rueda",
+  "author_email": "p.rueda@applicaster.com",
   "manifest_version": "1.4.0",
   "name": "JW Player",
   "description": "Android plugin for JWPlayer",
   "type": "player",
+  "screen": true,
   "identifier": "JWPlayer-Plugin",
   "ui_builder_support": true,
   "dependency_name": "com.applicaster:JWPlayerPlugin",
@@ -65,6 +66,27 @@
       "type": "text",
       "key": "vod_ad_type",
       "tooltip_text": "VOD Ad Type"
+    },
+    {
+      "type": "checkbox",
+      "key": "ignore_default_subscription",
+      "default": 0
     }
-  ]
+  ],
+  "hooks": {
+    "fields": [
+      {
+        "group": true,
+        "label": "Before Load",
+        "folded": true,
+        "fields": [
+          {
+            "key": "preload_plugins",
+            "type": "preload_plugins_selector",
+            "label": "Select Plugins"
+          }
+        ]
+      }
+    ]
+  }
 }

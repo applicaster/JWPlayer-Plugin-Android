@@ -3,6 +3,7 @@ package com.applicaster.jwplayerplugin;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -13,15 +14,19 @@ import com.applicaster.plugin_manager.login.LoginContract;
 import com.applicaster.plugin_manager.login.LoginManager;
 import com.applicaster.plugin_manager.playersmanager.Playable;
 import com.applicaster.plugin_manager.playersmanager.PlayableConfiguration;
+import com.applicaster.plugin_manager.screen.PluginScreen;
 import com.longtailvideo.jwplayer.JWPlayerView;
 import com.longtailvideo.jwplayer.core.PlayerState;
 import com.longtailvideo.jwplayer.events.FullscreenEvent;
 import com.longtailvideo.jwplayer.events.listeners.VideoPlayerEvents;
 import com.longtailvideo.jwplayer.fullscreen.FullscreenHandler;
+
+import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, VideoPlayerEvents.OnFullscreenListener {
+public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, VideoPlayerEvents.OnFullscreenListener, PluginScreen {
 
     public static final String TAG = "JWPLAYER_DEBUG_KEY";
     private static final String LICENSE_KEY = "LICENSE_KEY";
@@ -271,6 +276,20 @@ public class JWPlayerAdapter extends BasePlayer implements FullscreenHandler, Vi
             displayVideo(false);
         }
     }
+
+    //region PluginScreen
+
+    //Necessary to implement this method to allow prehooks, however this constructor is never called for a player
+    @Override
+    public void present(Context context, HashMap<String, Object> screenMap, Serializable dataSource, boolean isActivity) { }
+
+    @Override
+    public Fragment generateFragment(HashMap<String, Object> screenMap, Serializable dataSource) {
+        return null;
+    }
+
+    //endregion
+
 
     /************************** PlayerLoaderI ********************/
     private class ApplicaterPlayerLoaderListener implements PlayerLoaderI {
