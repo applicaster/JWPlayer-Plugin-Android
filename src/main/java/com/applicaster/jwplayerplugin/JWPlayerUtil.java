@@ -78,7 +78,7 @@ public class JWPlayerUtil {
         List<AdBreak> adSchedule = new ArrayList<>();
 
         if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
-            List<LinkedHashMap<String,String>> advertisingList = ((APAtomEntry.APAtomEntryPlayable) playable).getEntry().getExtension("videoAds", ArrayList.class);
+            List<LinkedHashMap<String, String>> advertisingList = ((APAtomEntry.APAtomEntryPlayable) playable).getEntry().getExtension("video_ads", ArrayList.class);
             adSchedule = getJWAdScheduler(advertisingList);
         }
 
@@ -100,7 +100,7 @@ public class JWPlayerUtil {
         if (advertisingList!=null) {
             for (int i = 0; i < advertisingList.size(); i++) {
                 LinkedHashMap<String,String> advertisingModel = advertisingList.get(i);
-                AdBreak adBreak = new AdBreak(advertisingModel.get("offset"), AdSource.valueByName(advertisingModel.get("type")), advertisingModel.get("ad_url"));
+                AdBreak adBreak = new AdBreak(String.valueOf(advertisingModel.get("offset")), AdSource.VAST, advertisingModel.get("ad_url"));
                 result.add(adBreak);
             }
         }
