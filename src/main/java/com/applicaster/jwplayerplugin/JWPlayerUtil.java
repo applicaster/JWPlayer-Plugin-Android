@@ -56,15 +56,14 @@ public class JWPlayerUtil {
     private static List<Caption> getCaptions(Playable playable) {
         List<Caption> captionList = new ArrayList<>();
 
-        if(playable instanceof APAtomEntry.APAtomEntryPlayable) {
+        if (playable instanceof APAtomEntry.APAtomEntryPlayable) {
             List<LinkedHashMap<String, String>> sideCarCaptions =
-                    ((APAtomEntry.APAtomEntryPlayable) playable).getEntry()
-                            .getExtension("sideCarCaptions", ArrayList.class);
+                    (List<LinkedHashMap<String, String>>) ((LinkedHashMap)((APAtomEntry.APAtomEntryPlayable) playable).getEntry().getExtensions().get("text_tracks")).get("tracks");
 
-            if(sideCarCaptions != null) {
+            if (sideCarCaptions != null) {
                 for (int i = 0; i < sideCarCaptions.size(); i++) {
                     LinkedHashMap<String, String> sideCarCaption = sideCarCaptions.get(i);
-                    Caption caption = new Caption.Builder().file(sideCarCaption.get("src"))
+                    Caption caption = new Caption.Builder().file(sideCarCaption.get("source"))
                             .label(sideCarCaption.get("label")).build();
                     captionList.add(caption);
                 }
