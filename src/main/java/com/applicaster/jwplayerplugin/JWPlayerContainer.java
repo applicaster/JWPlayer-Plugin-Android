@@ -85,6 +85,8 @@ public class JWPlayerContainer extends FrameLayout{
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         // onDestroy() called
+        if(jwPlayerView != null)
+            jwPlayerView.onDestroy();
     }
 
     @Override
